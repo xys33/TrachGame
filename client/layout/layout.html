@@ -2,7 +2,6 @@
 
 	{{>header}}
 	{{>navbar}}
-	{{> loginButtons}}
 
 	<div name="containter">
 		{{> yield}}
@@ -35,7 +34,7 @@
        
       </ul>
       <ul class="nav navbar-nav navbar-right">
-        <li><a href="#">Tu logowanie</a></li>
+        <li>{{> loginButtons}}</li>
       </ul>
     </div><!-- /.navbar-collapse -->
   </div><!-- /.container-fluid -->
