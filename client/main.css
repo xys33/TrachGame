@@ -1,14 +1,24 @@
 /* CSS declarations go here */
 body {
-    background-color: lightblue;
-}
+   		}
 
-h1 {
-    color: red;
+
+.header {
+	background-color:lightblue;
+    color: Blue;
     text-align: center;
 }
 
+.footer{
+	background-color:lightblue;
+	font-size:10px;
+}
 p {
     font-family: verdana;
     font-size: 20px;
+}
+
+h1 {
+
+	text-align: center;
 }
