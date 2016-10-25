@@ -1,5 +1,3 @@
-import { Template } from 'meteor/templating';
-import { ReactiveVar } from 'meteor/reactive-var';
+/* Petra v1.0 */
 
-import './main.html';
-
+Meteor.subscribe('userData');

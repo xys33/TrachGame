@@ -1,0 +1,23 @@
+<template name="layout">
+    <div class="container wrapper">
+        {{> header}}
+        {{> meteorErrors}}
+        <div id="main">
+            {{> yield}}
+        </div>
+
+        <div class="push"></div>
+    </div>
+
+    <footer>
+        <div class="footer-div">
+            <div class="container">
+                <div class="row">
+                    <div class="col-xs-6 credit">
+                        open source IT project
+                    </div>
+                </div>
+            </div>
+        </div>
+    </footer>
+</template>

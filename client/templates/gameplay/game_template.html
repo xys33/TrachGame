@@ -1,0 +1,80 @@
+<template name="gameTemplate">
+    <div class="row game-container">
+        <div class="col-xs-12 col-sm-8">
+            <h3 class="room-title">{{gameData.title}}</h3>
+            <div class="game_table"><!-- okno gry -->
+            <p>Okno gry - do uzupelnienia</p> 
+
+
+
+
+
+            </div>
+        </div>
+
+        <div class="col-xs-12 col-sm-4">
+            <div class="row">
+                <div class="col-xs-5 col-sm-12">
+                    <h3>Players</h3>
+                    <div class="room-players">
+                        <ul class="list-group">
+                        <p>lista graczy (z playersAndScores?)</p>
+                            {{#each playersAndScores}}
+                                {{> playerListItem}}
+                            {{/each}}
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="col-xs-7 col-sm-12">
+                    <h3>Akcje (guziki wszystkie potrzebne?)</h3>
+                    <div class="row game-btns">
+                        <div class="col-xs-6 col-sm-6">
+                            <a href="#" style="width: 100%"
+                               class="btn btn-primary"
+                               id="recall-btn">
+                                Recall
+                            </a>
+                        </div>
+                        <div class="col-xs-6 col-sm-6">
+                            <a href="#" style="width: 100%"
+                               class="btn btn-primary"
+                               id="submit-move-btn">
+                                Submit
+                            </a>
+                        </div>
+                        <div class="col-xs-6 col-sm-6">
+                            <a href="#" style="width: 100%"
+                               class="btn btn-danger"
+                               id="pass-move-btn">
+                                Pass
+                            </a>
+                        </div>
+                        <div class="col-xs-6 col-sm-6">
+                            <a href="#" style="width: 100%"
+                               class="btn btn-danger"
+                               id="forfeit-btn">
+                                Forfeit
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xs-12">
+            <h3>How to play</h3>
+            <ul>
+                <li>
+                    Short instruction - kill enemies (mozna z tego zrezygnowac)
+                </li>
+            </ul>
+        </div>
+    </div>
+</template>
+
+<template name="playerListItem">
+    <li class="list-group-item {{isTurn}}">
+        {{username}}: {{score}} points
+    </li>
+</template>
