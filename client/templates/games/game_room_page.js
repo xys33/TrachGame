@@ -43,4 +43,12 @@ Template.gameRoomPage.events({
             }
         });
     }
+
+    'click .exit': function(e, tmpl) {
+        e.preventDefault();
+
+            Meteor.call('leaveRoom');
+        }
+    }
+
 });

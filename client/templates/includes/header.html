@@ -9,7 +9,8 @@
             {{#if currentUser}}
                 <ul class="nav navbar-nav navbar-right">
                     <li>
-                        <a href="#" class="logout">Logout</a>
+                        <span>{{currentUser.username}} </span>
+                        <span><a href="#" class="logout">Logout</a></span>
                     </li>
                 </ul>
             {{/if}}

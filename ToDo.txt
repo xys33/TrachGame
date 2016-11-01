@@ -1,0 +1,39 @@
+na pewno trzeba w miejscu gdzie wyswietlamy graczy petla each wypisywac userow z danego pokoju, bez tego ktoremu wyswitlamy
+to jest gdzies juz nawet gotowe, jak sie wystiwtla lista graczy w scrablach
+jeste tez gdzies funkcja isOwner, przy guziku startujacym gre, na niej mozna sie oprzec jak na szablonie
+
+w tym tez oknie game_room dodac dal graczy ktorzy nie spelniaja isOwner guzika w miejscu delete room do opuszczania pokoju -> odwrotna funkcjonalnosc do guzika join
+
+
+potem kolekcja hand -> numer gracza i typy kard ktore posiada, wypisywane w petli each
+
+kolekcja z kartami: typy i ilosci, ktore po wylosowaniu sie zmniejszaja, troche nie wiem jak skomponowac talie zeby byla gra zbalansowana, i czy losowac np. 150 modulo (liczba typow)
+
+resetowanie tali: mozna skojarzyc z reka gracza i panowac nad kartami ktore sa w grze lub resetowac po wyczerpaniu niezaleznie od reki -> co reset przybywa 15-25 kart
+
+kolekcja z atakami:
+karta akcji wywołuje dodanie wpisu do kolekcji ataków, parametryzowana wyborem atakwanego usera i akcja danej karty i ew. numerem ataku
+
+i tu chyba by trzeba wypisywac (tak jak userow) te ataki zeby byla mozliwosc reakcji na dany atak
+
+strojenie/dekorowanie:
+kartom w kolekcji przypisac nazwy, potem te nazwy pobierac i podczepiac do nich adekwatne obrazki, mozliwe chyba sa rozwiazania typu /img/# gdzie #-zmienna przyjmujaca wartosc z kolekcji
+
+trochę chaotycznie
+
+
+Atak x15
+Obrona x5
+Odbicie x5
+Przerzut x5
+Uzdrowienie x5
+Pustak x5
+Zmasowany atak x5
+Przebicie x5
+Zamrożenie x5
+Atomowy guzik x2
+Schron x5
+Globalizacja x2
+Wskrzeszenie x1
+
+razem 65
