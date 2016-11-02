@@ -7,41 +7,15 @@
                 <h3>Enemies</h3> <p> You are attacing player #</p>
 
                     <div class="row enemies-btns">
-                         <div class="col-xs-2 col-sm-2">
-                            <a href="#" style="width: 100%"
+                        {{#each normalPlayers}}
+                             <div class="col-xs-2 col-sm-2">
+                                <a href="#" style="width: 100%"
                                class="btn btn-primary"
-                               id="enemy1-btn">
-                                enemy1
+                               id="enemy-btn">
+                                {{username}}
                             </a>
                         </div>
-                        <div class="col-xs-2 col-sm-2">
-                            <a href="#" style="width: 100%"
-                               class="btn btn-primary"
-                               id="enemy2-btn">
-                                enemy2
-                            </a>
-                        </div>
-                        <div class="col-xs-2 col-sm-2">
-                            <a href="#" style="width: 100%"
-                               class="btn btn-primary"
-                               id="enemy3-btn">
-                                enemy3
-                            </a>
-                        </div>
-                        <div class="col-xs-2 col-sm-2">
-                            <a href="#" style="width: 100%"
-                               class="btn btn-primary"
-                               id="enemy4-btn">
-                                enemy4
-                            </a>
-                        </div>
-                        <div class="col-xs-2 col-sm-2">
-                            <a href="#" style="width: 100%"
-                               class="btn btn-primary"
-                               id="enemy5-btn">
-                                enemy5
-                            </a>
-                        </div>
+                        {{/each}}
                     </div>
              </div>
             <div class="col-sm-12">

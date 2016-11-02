@@ -34,16 +34,16 @@
                     </ul>
                 </div>
             </div>
-            {{#if isRoomOwner}}
+            <!--{{#if isRoomOwner}}-->
                 <div class="row" style="margin-top: 10px">
                     <div class="col-xs-8">
-                    {{#if enoughPlayers}}
+                    <!--{{#if enoughPlayers}}-->
                         <a href="#" style="width: 100%" class="start btn btn-primary">
                             Start game
                         </a>
-                    {{else}}
+                    <!--{{else}}
                         <p>not enough players to start game</p>
-                    {{/if}}
+                    {{/if}}-->
                     </div>
 
                     <div class="col-xs-4">
@@ -52,8 +52,8 @@
                         </a>
                     </div>
                 </div>
-                {{else}}
-                 <div class="row" style="margin-top: 10px">
+               <!-- {{else}}
+                <div class="row" style="margin-top: 10px">
                     <div class="col-xs-8"> 
                     </div>
                     <div class="col-xs-4">
@@ -62,7 +62,7 @@
                         </a>
                     </div>
                 </div> 
-            {{/if}}
+            {{/if}}-->
         {{else}}
             {{> gameTemplate}}
         {{/if}}
