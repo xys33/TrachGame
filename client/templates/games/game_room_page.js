@@ -9,14 +9,11 @@ Template.gameRoomPage.helpers({
             return player._id !== ownerId;
         });
         return nonOwners;
-    },
-    enoughPlayers: function() {
-        return enoughPlayers(this);
-    } 
+    }
 });
 
 Template.gameRoomPage.events({
-     'click .start': function(e, tmpl) {
+    'click .start': function(e, tmpl) {
         e.preventDefault();
 
         Meteor.call('startGame', this._id, function(err, result) {
@@ -45,16 +42,5 @@ Template.gameRoomPage.events({
                 Router.go('home');
             }
         });
-    },
-
-    'click .exit': function(e, tmpl) {
-        e.preventDefault();
-
-            Meteor.call('leaveRoom'){
-                Router.go('home');
-            };
-
-        }
     }
-
 });

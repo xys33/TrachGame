@@ -1,3 +1,3 @@
-/* Petra v1.0 */
+/* TrachGame v1.0 */
 
 Meteor.subscribe('userData');

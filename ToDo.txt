@@ -22,18 +22,18 @@ kartom w kolekcji przypisac nazwy, potem te nazwy pobierac i podczepiac do nich 
 trochę chaotycznie
 
 
-Atak x15
-Obrona x5
-Odbicie x5
-Przerzut x5
-Uzdrowienie x5
-Pustak x5
-Zmasowany atak x5
-Przebicie x5
-Zamrożenie x5
-Atomowy guzik x2
-Schron x5
-Globalizacja x2
-Wskrzeszenie x1
+Atak x15 Offensive
+Obrona x5 Defense
+Odbicie x5 Reflect
+Przerzut x5 Forward
+Uzdrowienie x5 Cure
+Pustak x5 HollowBrick
+Zmasowany atak x5 MassiveAttack
+Przebicie x5 Enhance
+Zamrożenie x5 Freeze
+Atomowy guzik x2 NuclearButton
+Schron x5 NuclearBunker
+Globalizacja x2 Globalization
+Wskrzeszenie x1 Resurrection
 
 razem 65

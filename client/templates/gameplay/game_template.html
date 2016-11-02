@@ -6,19 +6,8 @@
             <div class="col-sm-12"> <!--pobieranie danych o graczach z danego stolu, wrzucic w petle #each-->
                 <h3>Enemies</h3> <p> You are attacing player #</p>
 
-                    <div class="row enemies-btns">
-                        {{#each normalPlayers}}
-                             <div class="col-xs-2 col-sm-2">
-                                <a href="#" style="width: 100%"
-                               class="btn btn-primary"
-                               id="enemy-btn">
-                                {{username}}
-                            </a>
-                        </div>
-                        {{/each}}
-                    </div>
              </div>
-            <div class="col-sm-12">
+        <div class="col-sm-12">
             <h4>Your cards</h4><p>do zrobienia klasa btn-card</p> <!--zmiana wygladu kart, wrzucic w petle #each-->
                 <div class="row card-btns">
                             <div class="col-xs-2 col-sm-2">
@@ -27,39 +16,9 @@
                                    id="card1-btn">
                                     Card1
                                 </a>
-                            </div>
-                            <div class="col-xs-2 col-sm-2">
-                                <a href="#" style="width: 100%"
-                                   class="btn btn-primary"
-                                   id="card2-btn">
-                                    Card2
-                                </a>
-                            </div>
-                            <div class="col-xs-2 col-sm-2">
-                                <a href="#" style="width: 100%"
-                                   class="btn btn-primary"
-                                   id="card3-btn">
-                                    Card3
-                                </a>
-                            </div>
-                            <div class="col-xs-2 col-sm-2">
-                                <a href="#" style="width: 100%"
-                                   class="btn btn-primary"
-                                   id="card4-btn">
-                                    Card4
-                                </a>
-                            </div>
-                            <div class="col-xs-2 col-sm-2">
-                                <a href="#" style="width: 100%"
-                                   class="btn btn-primary"
-                                   id="card5-btn">
-                                    Card5
-                                </a>
-                            </div>
-                        </div>
-
+                            </div>         
                 </div>
-            </div>
+            
         </div>
 
         <div class="col-xs-12 col-sm-4">
@@ -77,22 +36,8 @@
                 </div>
 
                 <div class="col-xs-7 col-sm-12">
-                    <h3>Akcje (guziki wszystkie potrzebne?)</h3>
+                    <h3>Akcje</h3>
                     <div class="row game-btns">
-                        <div class="col-xs-6 col-sm-6">
-                            <a href="#" style="width: 100%"
-                               class="btn btn-primary"
-                               id="recall-btn">
-                                Recall
-                            </a>
-                        </div>
-                        <div class="col-xs-6 col-sm-6">
-                            <a href="#" style="width: 100%"
-                               class="btn btn-primary"
-                               id="submit-move-btn">
-                                Submit
-                            </a>
-                        </div>
                         <div class="col-xs-6 col-sm-6">
                             <a href="#" style="width: 100%"
                                class="btn btn-danger"
@@ -121,10 +66,12 @@
             </ul>
         </div>
     </div>
+    </div>
+    </div>
 </template>
 
 <template name="playerListItem">
     <li class="list-group-item {{isTurn}}">
-        {{username}}: {{score}} points
+        {{username}}: {{lives}} lives
     </li>
 </template>
