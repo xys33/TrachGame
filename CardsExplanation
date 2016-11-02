@@ -1,0 +1,36 @@
+1. Offensive
+	type: Offensive
+	You play it against one of your opponents: as a result he/she loses one life.
+2. Defence 
+	type: Defence, Response
+	Playing this card you survive without losing lives when your opponent plays offensive at you.
+3. Forward
+	type: Defence, Response
+	You forward someone’s attack on you onto another player (excluding the one that played offensive at you in the first place).
+4. Reflect
+	type: Defence, Response
+	Offensive played on you is responded back to the player who attacked you.
+5. Cure 
+	type: Regeneration 
+	You regain one lost live.
+6. Enhance
+	type: Played with other card (Offensive, Forward or Reflect)
+	Enhanced Offensive cannot be defended, reflected nor forwarded. Cannot be played with defence.
+7. Massive Attack
+	type: Offensive
+	Works as Offensive played on every one of your opponents. Responses are played individually. Person playing Enhance chooses opponent 		on 		which it will be played.
+8. Hollow Brick
+	type: Brick
+	Does nothing. If you have 5 on your hand YOU WIN!
+9. Nuclear Button
+	type: Offensive 
+	Everyone including you loses 3 lives. Only way to defend yourself is to play Nuclear Bunker.
+10. Resurrection
+	type: regeneration
+	Resurrects one player, who starts again with 5 lives and 5 new cards on hand, from dead. You can resurrect someone else or yourself 		but 		only directly after you lost your last live.
+11. Freeze
+	type: Defence
+	You are frozen for one tour. All cards (except Nuclear Button) do not effect you. You can play it on yourself or someone else.
+12. Globalization
+	type: Played with other card
+	Card affects all players.
