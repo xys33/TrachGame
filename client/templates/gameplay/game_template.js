@@ -314,13 +314,14 @@ Template.gameTemplate.helpers({
 
         var rawData = GameRooms.findOne(this._id,{
             fields: {
-                actionsInProgress: 1,
+                actionsInProgress: 1
             }
         });
         console.log("actionsList rawData",rawData);
 
         var actionsInProgress = [];
-        if (!rawData || !rawData.players) return actionsInProgress;
+
+        if (!rawData || !rawData.actionsInProgress) return actionsInProgress;
         for(var ai=0; ai < rawData.actionsInProgress.length; ai++)
         {
             actionsInProgress.push({
@@ -333,7 +334,11 @@ Template.gameTemplate.helpers({
         }
         console.log("actionsList return",actionsInProgress);
         return actionsInProgress;
-    }   
+    }, 
+
+   /* id2name: function(id2conv){ //------------------------nie bangla
+        return Meteor.user.findOne({_id: id2conv});
+    } */
 
 });
 
@@ -380,11 +385,21 @@ Template.gameTemplate.events({
         }
     },
 
-    ///////////////////////////////////////////////////////// funkcje kard
+    ///////////////////////////////////////////////////////// funkcje kart
 
     'click .card-Offensive': function(e,tmpl){ //atak
         e.preventDefault();
 
+        var init = Meteor.userId();
+        var targ = Session.get('selected-enemy');
+        if(targ !=0){ //-----------------------------------------------wybrany cel
+            var t = this.letter;
+            var roomId = Template.parentData(1)._id;
+
+            Meteor.call('offensive', roomId, init, targ, t, function(err, result) {
+                if (err) return Errors.throw(err.reason);
+            });
+         }
     },
 
     'click .card-Forward': function(e,tmpl){ //przerzut

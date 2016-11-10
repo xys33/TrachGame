@@ -4,7 +4,7 @@
             <h2>Tracz gejm</h2>
             <h3 class="room-title">{{gameData.title}}</h3>
             <div class="letter-grid">
-                <div class="col-xs-6 col-sm-4">
+                <div class="col-sm-6">
                     <div class="row game-btns"> 
                          <h3>Enemies List</h3>
                             <ul class="row game-btns">
@@ -15,7 +15,7 @@
                     </div>
                 </div>
 
-                <div class="col-xs-6 col-sm-4">
+                <div class="col-sm-6">
                     <div class="raw game-btns">
                         <h3>Actions in progress</h3>
                         <ul class="raw game-btns">
@@ -81,22 +81,17 @@
                     </div>
                 </div>
             </div>
-            <div class="col-xs-7 col-sm-12">
+            <div class="col-xs-7 col-sm-8">
                 <h3>Your cards</h3>
                     <div class="rack">
+                        <ul>
                             {{#each playerRack}}
-                                <div class="tile-elem-container">
-                                    <div class="rack-letter
+                                    <li class="card-{{letter}}
                                          {{selected}}" id="card-{{letter}}">
                                         {{letter}}
-                                    </div>
-                                    {{#if letter}}
-                                        <div class="tile-score">
-                                            {{score}}
-                                        </div>
-                                    {{/if}}
-                                </div>
+                                    </li>
                             {{/each}}
+                        </ul>
                     </div>
         </div>
         </div>
@@ -140,7 +135,7 @@
         <a  href="#" style="width: 100%"
             class="btn action-btn"
             id="action-{{_id}}">
-            {{type}}:{{initiatior}} --> {{target}}
+            {{type}}: {{initiator}} --> {{target}}
             </a>
     </div>
 </template>
