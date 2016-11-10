@@ -11,3 +11,6 @@ The TrachGame application consists of the following parts:
 - Trach Game information and rules.
 Those elements will be executed in Meteor environment which provides easy
 data base management.
+
+mongol
+meteortoys

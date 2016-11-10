@@ -1,11 +1,138 @@
 var stage = []; //store piece placements here before sending to the server
 
-Template.gameTemplate.onCreated(function() { 
-    //reset session variables ------------------------------------//te zmienne nam nie pasuja, beda inne (kieyds)
+function stagePlacement(roomId, letter, rackId, tileId) {
+    if (tileId === false) return Errors.throw('Select a tile first.');
+    else if (letter === false && rackId === false) {
+        return Errors.throw('Select a rack letter first.');
+    }
+
+    //get the current room's data
+    var gameData = GameRooms.findOne(roomId, {
+        fields: {
+            playerRacks: 1,
+            tiles: 1,
+            turn: 1
+        }
+    });
+
+    //can only place on their turn
+    if (gameData.turn !== Meteor.userId()) {
+        return Errors.throw('It isn\'t your turn!');
+    }
+
+    //bunch of convenience variables
+    var tiles = gameData.tiles;
+    var rack = gameData.playerRacks[Meteor.userId()];
+    var rackLetter = letter ? letter : rack[rackId].letter;
+    var tileLetter = tiles[tileId].letter;
+
+    //deal with the few different tile-rack cases
+    if (rackLetter !== false && tileLetter !== false) {
+        return Errors.throw('There\'s already a letter in that tile.');
+    } else if (rackLetter !== false && tileLetter === false) {
+        //find the rack id if you have to
+        if (rackId === false) {
+            for (var ai = 0; ai < rack.length; ai++) {
+                var rawRackLtr = rack[ai].letter;
+                var rackLtr = rawRackLtr ? rawRackLtr.toUpperCase() : rawRackLtr;
+                var lettersMatch = letter === rackLtr;
+                if (lettersMatch && rackLtr !== false) {
+                    rackId = ai;
+                    break;
+                }
+            }
+            if (rackId === false) return;
+        }
+
+        //update the LOCAL collection after placing the letter
+        tiles[tileId].letter = rackLetter;
+        tiles[tileId].score = rack[rackId].score;
+        rack[rackId].letter = false;
+        rack[rackId].score = false;
+        var propsToUpdate = {
+            tiles: tiles
+        };
+        propsToUpdate['playerRacks.'+Meteor.userId()] = rack;
+        GameRooms._collection.update(roomId, {
+            $set: propsToUpdate
+        });
+
+        //remember your changes so you can undo them later
+        stage.push([tileId, rackLetter]);
+
+        //get the next tile id
+        var nextTileId = false;
+        if (stage.length >= 2) {
+            var axisAligned = [0, 1].map(function(axis) {
+                return stage.map(function(placement) {
+                    return [
+                        placement[0]%15,
+                        Math.floor(placement[0]/15)
+                    ];
+                }).reduce(function(acc, coords, idx) {
+                    if (idx === 0) return [coords, true];
+                    else {
+                        return [coords, coords[axis]===acc[0][axis]&&acc[1]];
+                    }
+                }, false)[1];
+            });
+            var tileX = tileId%15;
+            var tileY = Math.floor(tileId/15);
+            if (axisAligned[0]) tileY = Math.min(tileY+1, 14);
+            else if (axisAligned[1]) tileX = Math.min(tileX+1, 14);
+
+            nextTileId = tileX+15*tileY;
+            if (nextTileId === tileId) nextTileId = false;
+        }
+
+        //update session variables
+        Session.set('selected-letter', false);
+        Session.set('selected-rack-item', false);
+        Session.set('selected-tile', nextTileId);
+    }
+}
+
+function reclaimLetter(roomId, tileId, rackId) {
+    //get the current room's data
+    var gameData = GameRooms.findOne(roomId, {
+        fields: {
+            playerRacks: 1,
+            tiles: 1
+        }
+    });
+    var rack = gameData.playerRacks[Meteor.userId()];
+
+    var stageChangeIdx = stage.reduce(function(ans, change, idx) {
+        return change[0] === tileId ? idx : ans;
+    }, false);
+    if (stageChangeIdx !== false) {
+        //it was a staged change so reclaim the letter
+        rack[rackId].letter = gameData.tiles[tileId].letter;
+        rack[rackId].score = gameData.tiles[tileId].score;
+        gameData.tiles[tileId].letter = false;
+        gameData.tiles[tileId].score = false;
+        var propsToUpdate = {
+            tiles: gameData.tiles
+        };
+        propsToUpdate['playerRacks.'+Meteor.userId()] = rack;
+        GameRooms._collection.update(roomId, {
+            $set: propsToUpdate
+        });
+
+        //remove this change from the stage
+        stage.splice(stageChangeIdx, 1);
+    } else { //otherwise tell them they can't reclaim it
+        return Errors.throw('That\'s not your letter to reclaim.');
+    }
+}
+
+Template.gameTemplate.onCreated(function() {
+    //reset session variables
     Session.set('selected-letter', false);
     Session.set('selected-rack-item', false);
     Session.set('selected-tile', false);
     Session.set('current-turn', false);
+    Session.set('selected-enemy',false);
 });
 
 Template.gameTemplate.onRendered(function() {
@@ -25,7 +152,165 @@ Template.gameTemplate.onRendered(function() {
     });
 });
 
-//----------------------------------------------------------------------------zdazenia do modyfikacji
+Template.gameTemplate.helpers({
+    gameData: function() {
+        var rawData = GameRooms.findOne(this._id, {
+            fields: {
+                tiles: 1,
+                title: 1,
+                turn: 1,
+                winner: 1
+            }
+        });
+        if (!rawData) return [];
+
+        var placedTileIds = stage.map(function(placement) {
+            return placement[0];
+        });
+        var tileIdsToRemove = [];
+        for (var ti = 0; ti < rawData.tiles.length; ti++) {
+            if (!!rawData.tiles[ti].letter) {
+                if (!!rawData.tiles[ti].userId) {
+                    rawData.tiles[ti].filledClass = 'filled';
+                    //an actual letter is here
+                    if (placedTileIds.indexOf(ti) !== -1) { //and so is a staged letter
+                        tileIdsToRemove.push(ti);
+                    }
+                } else {
+                    rawData.tiles[ti].filledClass = 'with-letter';
+                }
+            }
+
+            if (ti === Session.get('selected-tile')) {
+                rawData.tiles[ti].selectedClass = 'selected';
+            }
+
+            if (ti === 112) {
+                rawData.tiles[ti].multClass = 'center';
+                rawData.tiles[ti].multText = '&#9733;';
+            } else if (rawData.tiles[ti].mult === 2) {
+                rawData.tiles[ti].multClass = 'mult-dl';
+                rawData.tiles[ti].multText = 'DL';
+            } else if (rawData.tiles[ti].mult === 3) {
+                rawData.tiles[ti].multClass = 'mult-tl';
+                rawData.tiles[ti].multText = 'TL';
+            } else if (rawData.tiles[ti].mult === 12) {
+                rawData.tiles[ti].multClass = 'mult-dw';
+                rawData.tiles[ti].multText = 'DW';
+            } else if (rawData.tiles[ti].mult === 13) {
+                rawData.tiles[ti].multClass = 'mult-tw';
+                rawData.tiles[ti].multText = 'TW';
+            }
+        }
+
+        //fix stage conflicts
+        stage = stage.filter(function(placement) {
+            return tileIdsToRemove.indexOf(placement[0]) === -1;
+        });
+
+        //detect turn changes
+        if (rawData.turn !== Session.get('current-turn')) {
+            if (Session.get('current-turn') !== false) {
+                var beep = new Audio('/audio/beep.mp3');
+                beep.play();
+            }
+            var turnPref = 'YOUR TURN - ';
+            if (document.title.indexOf(turnPref) === 0) { //already there
+                if (rawData.turn !== Meteor.userId()) { //not them
+                    document.title = document.title.substring(
+                        turnPref.length
+                    ); //get rid of it
+                }
+            } else { //it isn't there
+                if (rawData.turn === Meteor.userId()) { //it is them
+                    document.title = turnPref+document.title;
+                }
+            }
+
+            Session.set('current-turn', rawData.turn);
+        }
+
+        return {
+            tiles: rawData.tiles,
+            title: rawData.title || 'Game board',
+            winner: rawData.winner
+        };
+    },
+
+    playerRack: function() {
+        var rawData = GameRooms.findOne(this._id, {
+            fields: {
+                playerRacks: 1
+            }
+        });
+
+        //deal with selected rack items
+        var rack = rawData.playerRacks[Meteor.userId()];
+        if (!rack) return [];
+        var selLetter = Session.get('selected-letter');
+        selLetter = selLetter ? selLetter.toUpperCase() : selLetter;
+        var foundIt = false;
+        for (var ai = 0; ai < rack.length; ai++) {
+            var rawRackLtr = rack[ai].letter;
+            var rackLtr = rawRackLtr ? rawRackLtr.toUpperCase() : rawRackLtr;
+            var lettersMatch = selLetter === rackLtr;
+            var idxsMatch = ai === Session.get('selected-rack-item');
+            if ((lettersMatch||idxsMatch) && !foundIt && rackLtr !== false) {
+                rack[ai].selected = 'selected';
+                foundIt = true;
+            } else {
+                rack[ai].selected = '';
+            }
+        }
+
+        return rack;
+    },
+
+    playersAndScores: function() {
+        var rawData = GameRooms.findOne(this._id, {
+            fields: {
+                players: 1, //array of {ids,usernames}
+                playerScores: 1, //object of ids -> scores
+                turn: 1
+            }
+        });
+        var playerList = [];
+        if (!rawData || !rawData.players) return playerList;
+        for (var pi = 0; pi < rawData.players.length; pi++) {
+            var playersId = rawData.players[pi]._id;
+            playerList.push({
+                username: rawData.players[pi].username,
+                score: rawData.playerScores[playersId],
+                isTurn: rawData.turn === playersId ? 'is-turn':''
+            });
+        }
+        return playerList;
+    },
+
+    enemiesListGen: function() //lista wrogow
+    {
+        
+        var rawData = GameRooms.findOne(this._id,{
+            fields: {
+                players: 1
+            }});
+
+        var enemiesList = [];
+        if (!rawData || !rawData.players) return enemiesList;
+        for(var ei =0; ei < rawData.players.length; ei++)
+        {
+            if(rawData.players[ei]._id != Meteor.userId())
+                enemiesList.push({
+                    _id:    rawData.players[ei]._id,
+                    username: rawData.players[ei].username
+                });
+        }
+        console.log("enemieslist",enemiesList);
+        return enemiesList;
+    }
+
+});
+
 Template.gameTemplate.events({
     'click .tile-elem, click .tile-letter': function(e, tmpl) {
         e.preventDefault();
@@ -51,6 +336,8 @@ Template.gameTemplate.events({
 
         var roomId = Template.parentData(1)._id;
         var rackId = parseInt(e.target.id.split('-')[2]);
+        var cardType = this.letter;
+        console.log("cardType",cardType);
         var sl = Session.get('selected-letter');
         var sr = Session.get('selected-rack-item');
         var st = Session.get('selected-tile');
@@ -65,6 +352,77 @@ Template.gameTemplate.events({
         } else {
             if (st !== false) reclaimLetter(roomId, st, rackId);
         }
+    },
+
+    ///////////////////////////////////////////////////////// funkcje kard
+
+    'click .card-Offensive': function(e,tmpl){ //atak
+        e.preventDefault();
+
+    },
+
+    'click .card-Forward': function(e,tmpl){ //przerzut
+        e.preventDefault();
+
+    },
+
+    'click .card-Cure': function(e,tmpl){ //uzdrowienie 
+        e.preventDefault();
+
+    },
+
+    'click .card-Reflect': function(e,tmpl){ //odbicie
+        e.preventDefault();
+
+    },
+
+    'click .card-HollowBrick': function(e,tmpl){ //pustak
+        e.preventDefault();
+
+    },
+    
+    'click .card-MassiveAttack': function(e,tmpl){ //zmasowany atak
+        e.preventDefault();
+
+    },
+   
+    'click .card-Enhance': function(e,tmpl){ //wzmocnienie
+        e.preventDefault();
+    },
+    
+    'click .card-Freeze': function(e,tmpl){ //zamrozenie
+        e.preventDefault();
+
+    },
+    
+    'click .card-NuclearButton': function(e,tmpl){ //guzik atomowy
+        e.preventDefault();
+
+    },
+    
+    'click .card-NuclearBunker': function(e,tmpl){ //schron
+        e.preventDefault();
+
+    },
+    
+    'click .card-Globalization': function(e,tmpl){ //globalizacja
+        e.preventDefault();
+
+    },
+    
+    'click .card-Resurection': function(e,tmpl){ //wskrzeszenie
+        e.preventDefault();
+
+    }, 
+    
+
+    'click .enemy-btn':function(e,tmpl){ //wybranie wroga
+        e.preventDefault();
+
+        var enemyId = this._id;
+        Session.set('selected-enemy',enemyId);
+        console.log(Session.get('selected-enemy'));
+        
     },
 
     'click #recall-btn': function(e, tmpl) {
@@ -232,3 +590,34 @@ Template.gameTemplate.events({
         }
     }
 });
+
+
+Template.trach.helpers({
+
+    enemiesList: function()
+    {
+        var enemiesList = [];
+        rawData = GameRooms.findOne(this._id,{fields: {players: 1}});
+        console.log("templatka trach this.id %s",this._id);
+        console.log("templatka trach parent %s",Template.parentData(_id));
+        if(!rawData || rawData.players) return enemiesList;
+        for(var pi =0; pi < rawData.players.length; pi++)
+        {
+            if(rawData.players[pi]._id != Meteor.userId())
+                eneimesList.push({
+                    username: rawData.players[pi].username
+                });
+        }
+        return enemiesList;
+    }
+
+
+});
+
+Template.trach.events({
+
+
+
+});
+
+
