@@ -132,7 +132,8 @@ Template.gameTemplate.onCreated(function() {
     Session.set('selected-rack-item', false);
     Session.set('selected-tile', false);
     Session.set('current-turn', false);
-    Session.set('selected-enemy',false);
+    Session.set('selected-enemy',false); //------------------------------------wybrany wrog
+    Session.set('selected-action',false); //-----------------------------------wybrana akcja
 });
 
 Template.gameTemplate.onRendered(function() {
@@ -307,7 +308,32 @@ Template.gameTemplate.helpers({
         }
         console.log("enemieslist",enemiesList);
         return enemiesList;
-    }
+    },
+
+    actionsList: function(){ //lista akcji 
+
+        var rawData = GameRooms.findOne(this._id,{
+            fields: {
+                actionsInProgress: 1,
+            }
+        });
+        console.log("actionsList rawData",rawData);
+
+        var actionsInProgress = [];
+        if (!rawData || !rawData.players) return actionsInProgress;
+        for(var ai=0; ai < rawData.actionsInProgress.length; ai++)
+        {
+            actionsInProgress.push({
+                _id: rawData.actionsInProgress[ai]._id,
+                active: rawData.actionsInProgress[ai].active,
+                initiator: rawData.actionsInProgress[ai].initiator,
+                target: rawData.actionsInProgress[ai].target,
+                type: rawData.actionsInProgress[ai].type
+            });
+        }
+        console.log("actionsList return",actionsInProgress);
+        return actionsInProgress;
+    }   
 
 });
 
@@ -337,7 +363,7 @@ Template.gameTemplate.events({
         var roomId = Template.parentData(1)._id;
         var rackId = parseInt(e.target.id.split('-')[2]);
         var cardType = this.letter;
-        console.log("cardType",cardType);
+        //console.log("cardType",cardType);
         var sl = Session.get('selected-letter');
         var sr = Session.get('selected-rack-item');
         var st = Session.get('selected-tile');
@@ -416,14 +442,29 @@ Template.gameTemplate.events({
     }, 
     
 
-    'click .enemy-btn':function(e,tmpl){ //wybranie wroga
+    'click .enemy-btn': function(e,tmpl){ //wybranie wroga
         e.preventDefault();
 
         var enemyId = this._id;
         Session.set('selected-enemy',enemyId);
-        console.log(Session.get('selected-enemy'));
+        //console.log(Session.get('selected-enemy'));
         
     },
+
+    'click .action-btn': function(e,tmpl){ // wybranie akcji do modyfikacji
+        e.preventDefault();
+
+        var actionId = this._id;
+        Session.set('selected-enemy',actionId);
+        console.log(Session.get('selected-action'));
+    },
+
+
+
+
+
+
+
 
     'click #recall-btn': function(e, tmpl) {
         e.preventDefault();
@@ -590,34 +631,4 @@ Template.gameTemplate.events({
         }
     }
 });
-
-
-Template.trach.helpers({
-
-    enemiesList: function()
-    {
-        var enemiesList = [];
-        rawData = GameRooms.findOne(this._id,{fields: {players: 1}});
-        console.log("templatka trach this.id %s",this._id);
-        console.log("templatka trach parent %s",Template.parentData(_id));
-        if(!rawData || rawData.players) return enemiesList;
-        for(var pi =0; pi < rawData.players.length; pi++)
-        {
-            if(rawData.players[pi]._id != Meteor.userId())
-                eneimesList.push({
-                    username: rawData.players[pi].username
-                });
-        }
-        return enemiesList;
-    }
-
-
-});
-
-Template.trach.events({
-
-
-
-});
-
 
