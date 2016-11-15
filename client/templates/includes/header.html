@@ -5,12 +5,13 @@
             <li><a href="{{pathFor 'home'}}">Home</a></li>
             <li><a href="{{pathFor 'rules'}}">Rules</a></li>
             <li><a href="{{pathFor 'about'}}">About</a></li>
-            <li><a href="{{pathFor 'chat'}}">Chat</a></li>
+            <li><a herf="{{pathFor 'chat'}}">Chat</a></li>
           </ul>
             {{#if currentUser}}
                 <ul class="nav navbar-nav navbar-right">
                     <li>
-                        <a href="#" class="logout">{{currentUser.username}} Logout</a>
+                        <span>{{currentUser.username}} </span>
+                        <span><a href="#" class="logout">Logout </a></span>
                     </li>
                 </ul>
             {{/if}}
