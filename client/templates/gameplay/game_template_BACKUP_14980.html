@@ -3,6 +3,7 @@
         <div class="col-xs-12 col-sm-8">
             <h2>Tracz gejm</h2>
             <h3 class="room-title">{{gameData.title}}</h3>
+<<<<<<< HEAD
             <div class="letter-grid">
                 <div class="col-sm-6">
                     <div class="row game-btns"> 
@@ -34,6 +35,25 @@
                     </div>
                 {{/if}}
             </div>
+=======
+            <div class="game_table"><!-- okno gry -->
+            <div class="col-sm-12"> <!--pobieranie danych o graczach z danego stolu, wrzucic w petle #each-->
+                <h3>Enemies</h3> <p> You are attacing player #</p>
+
+             </div>
+        <div class="col-sm-12">
+            <h4>Your cards</h4><p>do zrobienia klasa btn-card</p> <!--zmiana wygladu kart, wrzucic w petle #each-->
+                <div class="row card-btns">
+                            <div class="col-xs-2 col-sm-2">
+                                <a href="#" style="width: 100%"
+                                   class="btn btn-primary"
+                                   id="card1-btn">
+                                    Card1
+                                </a>
+                            </div>         
+                </div>
+            
+>>>>>>> chatmodule
         </div>
 
         <div class="col-xs-12 col-sm-4">
@@ -48,6 +68,12 @@
                         </ul>
                     </div>
                 </div>
+
+<<<<<<< HEAD
+=======
+                <div class="col-xs-7 col-sm-12">
+                    <h3>Akcje</h3>
+>>>>>>> chatmodule
                     <div class="row game-btns">
                         <div class="col-xs-6 col-sm-6">
                             <a href="#" style="width: 100%"
@@ -103,7 +129,11 @@
 
 <template name="playerListItem">
     <li class="list-group-item {{isTurn}}">
+<<<<<<< HEAD
         {{username}}: {{score}} lives
+=======
+        {{username}}: {{lives}} lives
+>>>>>>> chatmodule
     </li>
 </template>
 

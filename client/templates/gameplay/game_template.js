@@ -1,5 +1,6 @@
 var stage = []; //store piece placements here before sending to the server
 
+
 function stagePlacement(roomId, letter, rackId, tileId) {
     if (tileId === false) return Errors.throw('Select a tile first.');
     else if (letter === false && rackId === false) {
@@ -131,6 +132,7 @@ Template.gameTemplate.onCreated(function() {
     Session.set('selected-letter', false);
     Session.set('selected-rack-item', false);
     Session.set('selected-tile', false);
+
     Session.set('current-turn', false);
     Session.set('selected-enemy',false); //------------------------------------wybrany wrog
     Session.set('selected-action',false); //-----------------------------------wybrana akcja
@@ -139,22 +141,18 @@ Template.gameTemplate.onCreated(function() {
 Template.gameTemplate.onRendered(function() {
     document.addEventListener('keydown', function(e) {
         var selLetter = String.fromCharCode(e.keyCode);
-        var sl = Session.get('selected-letter');
-        var sr = Session.get('selected-rack-item');
-        var st = Session.get('selected-tile');
-        if (st !== false) {
-            var roomId = Router.current().params._id;
-            return stagePlacement(roomId, selLetter, false, st);
-        } else {
-            Session.set('selected-letter', selLetter);
+        var se = Session.get('selected-enemy');
+        var sc = Session.get('selected-card');
+
+            Session.set('selected-enemy', false);
             Session.set('selected-rack-item', false);
             Session.set('selected-tile', false);
-        }
     });
 });
 
 Template.gameTemplate.helpers({
     gameData: function() {
+
         var rawData = GameRooms.findOne(this._id, {
             fields: {
                 tiles: 1,
@@ -288,6 +286,7 @@ Template.gameTemplate.helpers({
         return playerList;
     },
 
+
     enemiesListGen: function() //lista wrogow
     {
         
@@ -343,7 +342,7 @@ Template.gameTemplate.helpers({
 });
 
 Template.gameTemplate.events({
-    'click .tile-elem, click .tile-letter': function(e, tmpl) {
+    'click .enemy': function(e, tmpl) { //-------------wybor osoby atakowanej
         e.preventDefault();
 
         var roomId = Template.parentData(1)._id;
@@ -362,7 +361,7 @@ Template.gameTemplate.events({
         }
     },
 
-    'click .rack-letter': function(e, tmpl) {
+    'click .card': function(e, tmpl) {   //---------------------wybor karty
         e.preventDefault();
 
         var roomId = Template.parentData(1)._id;
@@ -384,6 +383,7 @@ Template.gameTemplate.events({
             if (st !== false) reclaimLetter(roomId, st, rackId);
         }
     },
+
 
     ///////////////////////////////////////////////////////// funkcje kart
 

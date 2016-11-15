@@ -36,7 +36,7 @@
             </div>
             {{#if isRoomOwner}}
                 <div class="row" style="margin-top: 10px">
-                    <div class="col-xs-8"> <!--dodac warunek start od 3 graczy  >geme_room_page.js "players"?? nie wiem gdzie kolekcja i jak zliczyc-->
+                    <div class="col-xs-8">
                         <a href="#" style="width: 100%" class="start btn btn-primary">
                             Start game
                         </a>
@@ -59,3 +59,15 @@
     });
     </script>
 </template>
+
+<!--
+'click .exit': function(e, tmpl) {
+        e.preventDefault();
+
+            Meteor.call('leaveRoom'){
+                Router.go('home');
+            };
+
+        }
+    }
+-->
