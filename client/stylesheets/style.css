@@ -25,6 +25,11 @@ footer .credit {
     margin-top: 2rem;
 }
 
+.card{
+
+    display: inline;
+    list-style-type: none;
+}
 .grid-block, .shard {
     background: #fff;
     border-radius: 3px;

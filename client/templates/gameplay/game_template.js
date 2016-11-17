@@ -1,5 +1,26 @@
 var stage = []; //store piece placements here before sending to the server
 
+var enemiesListGen = function() //lista wrogow
+    {
+        
+        var rawData = GameRooms.findOne(this._id,{
+            fields: {
+                players: 1
+            }});
+
+        var enemiesList = [];
+        if (!rawData || !rawData.players) return enemiesList;
+        for(var ei =0; ei < rawData.players.length; ei++)
+        {
+            if(rawData.players[ei]._id != Meteor.userId())
+                enemiesList.push({
+                    _id:    rawData.players[ei]._id,
+                    username: rawData.players[ei].username
+                });
+        }
+       // console.log("enemieslist",enemiesList);
+        return enemiesList;
+    };
 
 function stagePlacement(roomId, letter, rackId, tileId) {
     if (tileId === false) return Errors.throw('Select a tile first.');
@@ -136,6 +157,7 @@ Template.gameTemplate.onCreated(function() {
     Session.set('current-turn', false);
     Session.set('selected-enemy',false); //------------------------------------wybrany wrog
     Session.set('selected-action',false); //-----------------------------------wybrana akcja
+    Session.set('globalization-flag',false); //--------------------------------------globalizacja
 });
 
 Template.gameTemplate.onRendered(function() {
@@ -286,29 +308,6 @@ Template.gameTemplate.helpers({
         return playerList;
     },
 
-
-    enemiesListGen: function() //lista wrogow
-    {
-        
-        var rawData = GameRooms.findOne(this._id,{
-            fields: {
-                players: 1
-            }});
-
-        var enemiesList = [];
-        if (!rawData || !rawData.players) return enemiesList;
-        for(var ei =0; ei < rawData.players.length; ei++)
-        {
-            if(rawData.players[ei]._id != Meteor.userId())
-                enemiesList.push({
-                    _id:    rawData.players[ei]._id,
-                    username: rawData.players[ei].username
-                });
-        }
-        console.log("enemieslist",enemiesList);
-        return enemiesList;
-    },
-
     actionsList: function(){ //lista akcji 
 
         var rawData = GameRooms.findOne(this._id,{
@@ -316,7 +315,7 @@ Template.gameTemplate.helpers({
                 actionsInProgress: 1
             }
         });
-        console.log("actionsList rawData",rawData);
+       // console.log("actionsList rawData",rawData);
 
         var actionsInProgress = [];
 
@@ -331,9 +330,11 @@ Template.gameTemplate.helpers({
                 type: rawData.actionsInProgress[ai].type
             });
         }
-        console.log("actionsList return",actionsInProgress);
+        //console.log("actionsList return",actionsInProgress);
         return actionsInProgress;
     }, 
+
+    enemiesListGen: enemiesListGen
 
    /* id2name: function(id2conv){ //------------------------nie bangla
         return Meteor.user.findOne({_id: id2conv});
@@ -361,101 +362,146 @@ Template.gameTemplate.events({
         }
     },
 
-    'click .card': function(e, tmpl) {   //---------------------wybor karty
+    'click .card': function(e, tmpl) {   //---------------------funkcje kart
         e.preventDefault();
 
-        var roomId = Template.parentData(1)._id;
-        var rackId = parseInt(e.target.id.split('-')[2]);
-        var cardType = this.letter;
-        //console.log("cardType",cardType);
-        var sl = Session.get('selected-letter');
-        var sr = Session.get('selected-rack-item');
-        var st = Session.get('selected-tile');
-        if (this.letter !== false) {
-            if (st !== false) {
-                return stagePlacement(roomId, false, rackId, st);
-            } else {
-                Session.set('selected-letter', false);
-                Session.set('selected-rack-item', rackId===sr?false:rackId);
-                Session.set('selected-tile', false);
-            }
-        } else {
-            if (st !== false) reclaimLetter(roomId, st, rackId);
-        }
-    },
-
-
-    ///////////////////////////////////////////////////////// funkcje kart
-
-    'click .card-Offensive': function(e,tmpl){ //atak
-        e.preventDefault();
-
+        var type = this.letter; //typ wybranej karty
         var init = Meteor.userId();
         var targ = Session.get('selected-enemy');
-        if(targ !=0){ //-----------------------------------------------wybrany cel
-            var t = this.letter;
-            var roomId = Template.parentData(1)._id;
+        var sAction = Session.get('selected-action');
+        var roomId = Template.parentData(1)._id;
 
-            Meteor.call('offensive', roomId, init, targ, t, function(err, result) {
-                if (err) return Errors.throw(err.reason);
-            });
-         }
-    },
+        switch(type){
 
-    'click .card-Forward': function(e,tmpl){ //przerzut
-        e.preventDefault();
+            case "Offensive":{ //atak
+                     if(targ !=0){ //-----------------------------------------------wybrany cel
 
-    },
+                        Meteor.call('offensive', roomId, init, targ, type, function(err, result) {
+                            if (err) return Errors.throw(err.reason);
+                        });
+                     }
+            console.log(type);
+            } break;
 
-    'click .card-Cure': function(e,tmpl){ //uzdrowienie 
-        e.preventDefault();
+            case "Defence":{
 
-    },
+            console.log(type);
+            } break;
 
-    'click .card-Reflect': function(e,tmpl){ //odbicie
-        e.preventDefault();
+            case "Forward":{ //przerzut
 
-    },
+                if(targ !=0 && sAction !=0){
+                    Meteor.call('forward',roomId,sAction,init,targ, function(err, result) {
+                            if (err) return Errors.throw(err.reason);
+                        });
+                }
+            console.log(type);    
+            } break;
 
-    'click .card-HollowBrick': function(e,tmpl){ //pustak
-        e.preventDefault();
+            case "Cure":{ //uzdrowienie
+                if(targ == false)
+                    targ = init;
 
-    },
-    
-    'click .card-MassiveAttack': function(e,tmpl){ //zmasowany atak
-        e.preventDefault();
+                Meteor.call('cure',roomId,targ,function(err, result) {
+                            if (err) return Errors.throw(err.reason);
+                        });
+            console.log(type);
+            } break;
 
-    },
-   
-    'click .card-Enhance': function(e,tmpl){ //wzmocnienie
-        e.preventDefault();
-    },
-    
-    'click .card-Freeze': function(e,tmpl){ //zamrozenie
-        e.preventDefault();
+            case "Reflect":{ //odbicie
 
-    },
-    
-    'click .card-NuclearButton': function(e,tmpl){ //guzik atomowy
-        e.preventDefault();
+                var check_target = GameRooms.actionsInProgress.findOne(sAction, {
+            fields: {
+                target: 1
+            }});
+                if(check_target == init)
+                {
+                    Meteor.call('reflect',roomId,sAction, function(err, result) {
+                            if (err) return Errors.throw(err.reason);               
+                 });
+                }
+            console.log(type);
+            } break;
 
-    },
-    
-    'click .card-NuclearBunker': function(e,tmpl){ //schron
-        e.preventDefault();
+            case "HollowBrick":{ //pustak
+                console.log("brawo uzyles pustaka! dzieje sie... nic");
+            } break;
 
-    },
-    
-    'click .card-Globalization': function(e,tmpl){ //globalizacja
-        e.preventDefault();
+            case "MassiveAttack":{ //zmasowany atak
+                var enemies = enemiesListGen();
+                var count = enemies.length;
+                for(var i=0;i<count;i++)
+                {
+                    targ = enemies[i]._id;
+                    Meteor.call('offensive', roomId, init, targ, type, function(err, result) {
+                            if (err) return Errors.throw(err.reason);
+                        });
+                }
+            console.log(type);
+            } break;
 
-    },
-    
-    'click .card-Resurection': function(e,tmpl){ //wskrzeszenie
-        e.preventDefault();
+            case "Enhance":{ //wzmocnienie--------------------------------------------------------------
 
-    }, 
-    
+
+            console.log(type);
+            } break;
+
+            case "Freeze":{ //zamrozenie 
+                if(targ == false)
+                    targ = init;
+
+                Meteor.call('freeze',roomId,targ,function(err, result) {
+                            if (err) return Errors.throw(err.reason);
+                        });
+            console.log(type);
+            } break;
+
+            case "NuclearButton":{ //guzik atomow
+                Meteor.call('nuclearButton',roomId,function(err, result) {
+                            if (err) return Errors.throw(err.reason);
+                        });
+            console.log(type);
+            } break;
+
+            case "NucleraBunker":{ //schron
+                if(targ == false)
+                    targ = init;
+
+                Meteor.call('nuclearBunker',roomId,targ,function(err, result) {
+                            if (err) return Errors.throw(err.reason);
+                        });
+            console.log(type);
+            } break;
+
+            case "Globalization":{ //globalizacja--------------------------------------------------------
+                if(sAction == false)
+                {
+                    Session.set('globalization-flag',true);
+                }
+                else
+                {
+                    var targets = GameRoom.findOne(roomId,{fields: {players: 1}});
+                    Meteor.call('globalization',roomId,sAction,targets,function(err, result) {
+                            if (err) return Errors.throw(err.reason);
+                        });
+                }
+            console.log(type);
+            } break;
+
+            case "Resurrection":{ //wskrzeszenie
+                if(targ == false)
+                    targ = init;
+
+                Meteor.call('resurrection',roomId,targ,function(err, result) {
+                            if (err) return Errors.throw(err.reason);
+                        });
+            console.log(type);
+            } break;
+
+        }
+
+        
+    },    
 
     'click .enemy-btn': function(e,tmpl){ //wybranie wroga
         e.preventDefault();
@@ -470,8 +516,8 @@ Template.gameTemplate.events({
         e.preventDefault();
 
         var actionId = this._id;
-        Session.set('selected-enemy',actionId);
-        console.log(Session.get('selected-action'));
+        Session.set('selected-action',actionId);
+        //console.log(Session.get('selected-action'));
     },
 
 

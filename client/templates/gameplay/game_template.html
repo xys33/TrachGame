@@ -3,11 +3,11 @@
         <div class="col-xs-12 col-sm-8">
             <h2>Tracz gejm</h2>
             <h3 class="room-title">{{gameData.title}}</h3>
-            <div class="letter-grid">
+            <div class="col-xs-12 col-sm-12">
                 <div class="col-sm-6">
                     <div class="row game-btns"> 
                          <h3>Enemies List</h3>
-                            <ul class="row game-btns">
+                            <ul class="list-group"> <!-- dodac guzik selected-enemy = false-->
                                 {{#each enemiesListGen}}
                                     {{> enemiesListItem}}
                                 {{/each}}
@@ -18,7 +18,7 @@
                 <div class="col-sm-6">
                     <div class="raw game-btns">
                         <h3>Actions in progress</h3>
-                        <ul class="raw game-btns">
+                        <ul class="raw game-btns list-group">
                             {{#each actionsList}}
                                 {{> actionsListItem}}
                             {{/each}}
@@ -66,16 +66,17 @@
                     </div>
                 </div>
             </div>
-            <div class="col-xs-7 col-sm-8">
+            <div class="col-xs-7 col-sm-12">
                 <h3>Your cards</h3>
-                    <div class="rack">
+                    <div class="row game-btns">
                         <ul>
                             {{#each playerRack}}
-                                    <li class="card-{{letter}}
-                                         {{selected}}" id="card-{{letter}}">
-                                        {{letter}}
+                                    <li class="card" 
+                                    id="card-{{letter}}">
+                                         <img src="/pics/{{letter}}.png" alt="{{letter}}" height="300" width="150">
                                     </li>
                             {{/each}}
+                            <!--<li><img src="/pics/trachowca.jpg" alt="Do nothing" height="300" width="150"><br/>Do nothing</li>-->
                         </ul>
                     </div>
         </div>
@@ -108,7 +109,7 @@
 <template name="enemiesListItem">
     <div class="col-xs-6 col-sm-6">
         <a  href="#" style="width: 100%"
-            class="btn enemy-btn"
+            class="btn enemy-btn list-group-item"
             id="enemy-{{_id}}">
             {{username}}
             </a>
@@ -118,7 +119,7 @@
 <template name="actionsListItem">
     <div class="col-xs-6 col-sm-6">
         <a  href="#" style="width: 100%"
-            class="btn action-btn"
+            class="btn action-btn list-group-item"
             id="action-{{_id}}">
             {{type}}: {{initiator}} --> {{target}}
             </a>
