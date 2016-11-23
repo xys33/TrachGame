@@ -22,6 +22,21 @@ var enemiesListGen = function() //lista wrogow
         return enemiesList;
     };
 
+var id2name = function(roomId,id)
+{
+    var name;
+    var rawData = GameRooms.findOne(roomId,{fields: {players: 1}});
+    //console.log(rawData.players);
+    //console.log(rawData.players);
+    for(var i=0;i<rawData.players.length;i++)
+    {
+        if(rawData.players[i]._id == id)
+            name = rawData.players[i].username;
+    }
+    //console.log(name);
+    return name;
+};
+
 function stagePlacement(roomId, letter, rackId, tileId) {
     if (tileId === false) return Errors.throw('Select a tile first.');
     else if (letter === false && rackId === false) {
@@ -310,9 +325,11 @@ Template.gameTemplate.helpers({
 
     actionsList: function(){ //lista akcji 
 
-        var rawData = GameRooms.findOne(this._id,{
+        roomId = this._id;
+        var rawData = GameRooms.findOne(roomId,{
             fields: {
-                actionsInProgress: 1
+                actionsInProgress: 1,
+                players: 1
             }
         });
        // console.log("actionsList rawData",rawData);
@@ -326,7 +343,9 @@ Template.gameTemplate.helpers({
                 _id: rawData.actionsInProgress[ai]._id,
                 active: rawData.actionsInProgress[ai].active,
                 initiator: rawData.actionsInProgress[ai].initiator,
+                initiatorName: id2name(roomId,rawData.actionsInProgress[ai].initiator),
                 target: rawData.actionsInProgress[ai].target,
+                targetName: id2name(roomId,rawData.actionsInProgress[ai].target),
                 type: rawData.actionsInProgress[ai].type
             });
         }
@@ -334,11 +353,27 @@ Template.gameTemplate.helpers({
         return actionsInProgress;
     }, 
 
+    selectedClass: function(){
+
+        var itemId = this.id;
+        var selected_enemy = Session.get('selected-enemy');
+        var selected_action = Session.get('selected-action');
+
+        if(itemId == selected_enemy || itemId == selected_action)
+            return "selected";
+        else
+            return "";
+
+    },
+
     enemiesListGen: enemiesListGen
+
+
 
    /* id2name: function(id2conv){ //------------------------nie bangla
         return Meteor.user.findOne({_id: id2conv});
     } */
+
 
 });
 
@@ -360,6 +395,14 @@ Template.gameTemplate.events({
             Session.set('selected-rack-item', false);
             Session.set('selected-tile', tileId === st ? false : tileId);
         }
+    },
+
+    'click .clear-btn':function(e,tmpl){
+        e.preventDefault();
+
+        Session.set('selected-enemy',false);
+        Session.set('selected-action',false);
+
     },
 
     'click .card': function(e, tmpl) {   //---------------------funkcje kart
