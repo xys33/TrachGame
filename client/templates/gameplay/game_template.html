@@ -63,6 +63,13 @@
                                 Forfeit
                             </a>
                         </div>
+                        <div class="col-xs-6 col-sm-6">
+                            <a href="#" style="width: 100%"
+                               class="btn btn-danger"
+                               id="pass-turn-btn">
+                                Pass Turn
+                            </a>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -83,25 +90,11 @@
             <div class="col-sm-3">
             <button class="clear-btn">Clear</button>
             </div>
-
-        </div>
-</template>
-
-<template name="tile">
-    <div class="tile-elem-container">
-        <div class="tile-elem {{multClass}}" id="tile-{{_id}}">
-            {{{multText}}}
-        </div>
-        <div class="tile-letter {{filledClass}}
-            {{selectedClass}}" id="letter-{{_id}}">
-            {{letter}}
-        </div>
-        {{#if letter}}
-            <div class="tile-score">
-                {{score}}
+            <div class="col-sm-6">
+            <button class="execute-btn">Execute</button>
             </div>
-        {{/if}}
-    </div>
+
+        </div>
 </template>
 
 <template name="playerListItem">
