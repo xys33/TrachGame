@@ -174,8 +174,9 @@ Template.gameTemplate.onCreated(function() {
     Session.set('selected-enemy',false); //------------------------------------wybrany wrog
     Session.set('selected-action',false); //-----------------------------------wybrana akcja
     Session.set('selected-card',false); //-------------------------------------wybrana karta
+    Session.set('selected-card-id',false); 
 
-    Session.set('globalization-flag',false); //--------------------------------------globalizacja
+    
 });
 
 Template.gameTemplate.onRendered(function() {
@@ -210,7 +211,6 @@ Template.gameTemplate.helpers({
                 beep.play();
             }
             var turnPref = 'YOUR TURN - ';
-            var movePref = '-YOUR MOVE-';
             if (document.title.indexOf(turnPref) === 0) { //already there
                 if (rawData.turn !== Meteor.userId()) { //not them
                     document.title = document.title.substring(
@@ -220,9 +220,6 @@ Template.gameTemplate.helpers({
             } else { //it isn't there
                 if (rawData.turn === Meteor.userId()) { //it is them
                     document.title = turnPref+document.title;
-                }
-                if (rawData.move === Meteor.userId()) {     // show move pref
-                    document.title = movePref+document.title;
                 }
             }
 
@@ -242,24 +239,8 @@ Template.gameTemplate.helpers({
             }
         });
 
-        //deal with selected rack items
         var rack = rawData.playerRacks[Meteor.userId()];
         if (!rack) return [];
-        var selLetter = Session.get('selected-letter');
-        selLetter = selLetter ? selLetter.toUpperCase() : selLetter;
-        var foundIt = false;
-        for (var ai = 0; ai < rack.length; ai++) {
-            var rawRackLtr = rack[ai].letter;
-            var rackLtr = rawRackLtr ? rawRackLtr.toUpperCase() : rawRackLtr;
-            var lettersMatch = selLetter === rackLtr;
-            var idxsMatch = ai === Session.get('selected-rack-item');
-            if ((lettersMatch||idxsMatch) && !foundIt && rackLtr !== false) {
-                rack[ai].selected = 'selected';
-                foundIt = true;
-            } else {
-                rack[ai].selected = '';
-            }
-        }
 
         return rack;
     },
@@ -331,12 +312,6 @@ Template.gameTemplate.helpers({
     enemiesListGen: enemiesListGen
 
 
-
-   /* id2name: function(id2conv){ //------------------------nie bangla
-        return Meteor.user.findOne({_id: id2conv});
-    } */
-
-
 });
 
 Template.gameTemplate.events({
@@ -364,6 +339,7 @@ Template.gameTemplate.events({
 
         Session.set('selected-enemy',false);
         Session.set('selected-action',false);
+        Session.set('selected-card',false);
 
     },
 
@@ -371,7 +347,7 @@ Template.gameTemplate.events({
         e.preventDefault();
 
         Session.set('selected-card',this.letter);
-
+        Session.set('selected-card-id',this._id);
         
     },    
 
@@ -412,64 +388,13 @@ Template.gameTemplate.events({
 
     },
 
-
-    'click #recall-btn': function(e, tmpl) {
-        e.preventDefault();
-
-        //get the game data you need
-        var gameData = GameRooms._collection.findOne(this._id, {
-            fields: {
-                playerRacks: 1,
-                tiles: 1
-            }
-        }); //search local collection?
-        var tiles = gameData.tiles;
-        var rack = gameData.playerRacks[Meteor.userId()];
-
-        //undo all the staged changes
-        var stageIdx = 0;
-        for (var ri = 0; ri < rack.length && stageIdx < stage.length; ri++) {
-            if (rack[ri].letter === false) {
-                rack[ri].letter = stage[stageIdx][1];
-                rack[ri].score = LETTER_PTS[rack[ri].letter.toLowerCase()];
-                tiles[stage[stageIdx][0]].letter = false;
-                tiles[stage[stageIdx][0]].score = false;
-                stageIdx++;
-            }
-        }
-        stage = [];
-
-        //send the undone version back to the minimongo collection
-        var propsToUpdate = {
-            tiles: tiles
-        };
-        propsToUpdate['playerRacks.'+Meteor.userId()] = rack;
-        GameRooms._collection.update(this._id, {
-            $set: propsToUpdate
-        });
-
-        //remove all selections
-        Session.set('selected-letter', false);
-        Session.set('selected-rack-item', false);
-        Session.set('selected-tile', false);
-    },
-
-    'click #pass-move-btn': function(e, tmpl) {
-        e.preventDefault();
-
-        if (confirm('Are you sure you want to pass your move?')) {
-            Meteor.call('passMove',roomId,Meteor.userId(),function(err, result){});
-        }
-    },
-
     'click #pass-turn-btn': function(e,tmpl){
         e.preventDefault();
 
         if(confirm('Are you sure you want to pass your turn?'))
         {
-                var cardToChange = Session.get('selected-card');
                 var roomId = Template.parentData(1)._id;
-                Meteor.call('passTurn',roomId,Meteor.userId(),cardToChange,function(err, result){});
+                Meteor.call('passTurn',roomId,Meteor.userId(),function(err, result){});
         }
 
     },

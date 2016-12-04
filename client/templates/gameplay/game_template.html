@@ -48,14 +48,21 @@
                         </ul>
                     </div>
                 </div>
-                    <div class="row game-btns">
-                        <div class="col-xs-6 col-sm-6">
+                    <div class="col-xs-6 col-sm-6">
                             <a href="#" style="width: 100%"
-                               class="btn btn-danger"
-                               id="pass-move-btn">
-                                Pass
+                               class="btn btn-primary"
+                               id="execute-btn">
+                                Execute
                             </a>
-                        </div>
+                    </div>
+                    <div class="col-xs-6 col-sm-6">
+                            <a href="#" style="width: 100%"
+                               class="btn btn-primary"
+                               id="clear-btn">
+                                Clear
+                            </a>
+                    </div>
+                    <div class="row game-btns">
                         <div class="col-xs-6 col-sm-6">
                             <a href="#" style="width: 100%"
                                class="btn btn-danger"
@@ -83,15 +90,8 @@
                                          <img src="/pics/{{letter}}.png" alt="{{letter}}" height="300" width="150">
                                     </li>
                             {{/each}}
-                            <!--<li><img src="/pics/trachowca.jpg" alt="Do nothing" height="300" width="150"><br/>Do nothing</li>-->
                         </ul>
                     </div>
-            </div>
-            <div class="col-sm-3">
-            <button class="clear-btn">Clear</button>
-            </div>
-            <div class="col-sm-6">
-            <button class="execute-btn">Execute</button>
             </div>
 
         </div>
