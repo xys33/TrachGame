@@ -348,7 +348,7 @@ Template.gameTemplate.events({
 
         Session.set('selected-card',this.letter);
         Session.set('selected-card-id',this._id);
-        
+        //console.log(Session.get('selected-card'),Session.get('selected-card-id'));
     },    
 
     'click .enemy-btn': function(e,tmpl){ //wybranie wroga
@@ -368,23 +368,24 @@ Template.gameTemplate.events({
         //console.log(Session.get('selected-action'));
     },
 
-    'click .execute-btn':function(e,tmpl){ //wykonanie akcji zgodnie z wybranymi zmiennymi sesji
+    'click #execute-btn':function(e,tmpl){ //wykonanie akcji zgodnie z wybranymi zmiennymi sesji
         e.preventDefault();
 
-        var current_move = GameRooms._collection.findOne(this.id,{fields: {move:1, stillActive: 1}});
         var playerId = Meteor.userId();
+        var targ = Session.get('selected-enemy');
+        var sAction = Session.get('selected-action'); 
+        var type = Session.get('selected-card');    
+        var cardId = Session.get('selected-card-id'); 
 
-        if(current_move.move == playerId) //sprawdzenie czy obecnie ruch danego gracza
-        {   
-            if(current_move.stillActive[playerId])
-             Meteor.call('makeMove',this._id,Meteor.UserId(), function(err, result) {
+             Meteor.call('makeMove',Template.parentData(1)._id,playerId,targ,sAction,type,cardId, function(err, result) {
                             if (err) return Errors.throw(err.reason);
                         });
-            else
-            {
-                console.log('przekazanie ruchu kolejnemu graczowi');
-            }
-        }
+
+        Session.set('selected-enemy',false);
+        Session.set('selected-action',false);
+        Session.set('selected-card',false);
+        Session.set('selected-card-id',false);
+        //console.log('execute-btn');
 
     },
 
