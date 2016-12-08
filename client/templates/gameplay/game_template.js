@@ -348,7 +348,7 @@ Template.gameTemplate.events({
 
         Session.set('selected-card',this.letter);
         Session.set('selected-card-id',this._id);
-        //console.log(Session.get('selected-card'),Session.get('selected-card-id'));
+        console.log(Session.get('selected-card'),Session.get('selected-card-id'));
     },    
 
     'click .enemy-btn': function(e,tmpl){ //wybranie wroga
