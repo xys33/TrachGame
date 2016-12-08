@@ -136,7 +136,7 @@ body {
 .room-title {
     text-align: center;
 }
-
+/*
 .letter-grid {
     width: 450px;
     height: 450px;
@@ -247,7 +247,7 @@ body {
     background-color: rgba(210, 207, 4, 0.9);
     border: 1px solid #8b8c1d;
 }
-
+*/
 .rack {
     width: 210px;
     height: 30px;

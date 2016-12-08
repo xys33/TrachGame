@@ -315,6 +315,7 @@ Template.gameTemplate.helpers({
 });
 
 Template.gameTemplate.events({
+    /*
     'click .enemy': function(e, tmpl) { //-------------wybor osoby atakowanej
         e.preventDefault();
 
@@ -323,6 +324,7 @@ Template.gameTemplate.events({
         var sl = Session.get('selected-letter');
         var sr = Session.get('selected-rack-item');
         var st = Session.get('selected-tile');
+
         if (sr !== false && st === false) {
             return stagePlacement(roomId, false, sr, tileId);
         } else if (sl !== false && st === false) {
@@ -332,7 +334,7 @@ Template.gameTemplate.events({
             Session.set('selected-rack-item', false);
             Session.set('selected-tile', tileId === st ? false : tileId);
         }
-    },
+    },*/
 
     'click .clear-btn':function(e,tmpl){
         e.preventDefault();
@@ -371,21 +373,28 @@ Template.gameTemplate.events({
     'click #execute-btn':function(e,tmpl){ //wykonanie akcji zgodnie z wybranymi zmiennymi sesji
         e.preventDefault();
 
-        var playerId = Meteor.userId();
-        var targ = Session.get('selected-enemy');
-        var sAction = Session.get('selected-action'); 
-        var type = Session.get('selected-card');    
-        var cardId = Session.get('selected-card-id'); 
+        if(Session.get('current-turn')==Meteor.userId())
+        {
+            var playerId = Meteor.userId();
+            var targ = Session.get('selected-enemy');
+            var sAction = Session.get('selected-action'); 
+            var type = Session.get('selected-card');    
+            var cardId = Session.get('selected-card-id'); 
 
-             Meteor.call('makeMove',Template.parentData(1)._id,playerId,targ,sAction,type,cardId, function(err, result) {
-                            if (err) return Errors.throw(err.reason);
-                        });
+                 Meteor.call('makeMove',Template.parentData(1)._id,playerId,targ,sAction,type,cardId, function(err, result) {
+                                if (err) return Errors.throw(err.reason);
+                            });
 
-        Session.set('selected-enemy',false);
-        Session.set('selected-action',false);
-        Session.set('selected-card',false);
-        Session.set('selected-card-id',false);
-        //console.log('execute-btn');
+            Session.set('selected-enemy',false);
+            Session.set('selected-action',false);
+            Session.set('selected-card',false);
+            Session.set('selected-card-id',false);
+            //console.log('execute-btn');
+        }
+        else
+            console.log('not your turn');
+
+
 
     },
 
